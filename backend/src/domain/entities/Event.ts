@@ -3,7 +3,7 @@ import { InvalidEventTitleError } from "../errors/EventErrors/InvalidEventTitleE
 import { InvalidEventTypeError } from "../errors/EventErrors/InvalidEventTypeError";
 import { EventStatus } from "../enums/EventEnum/EventStatus";
 import { EventType } from "../enums/EventEnum/EventType";
-import { NotificationTiming } from "../enums/EventEnum/NotificationFrequency";
+import { NotificationTiming } from "../enums/EventEnum/NotificationTiming";
 import { InvalidEventScheduleError } from "../errors/EventErrors/InvalidEventScheduleError";
 import { InvalidEventDurationError } from "../errors/EventErrors/InvalidEventDurationError";
 import { InvalidEventNotificationTimingError } from "../errors/EventErrors/InvalidEventNotificationTimingError";
@@ -11,46 +11,42 @@ import { StatusAlreadySetError }  from "../errors/EventErrors/StatusAlreadySetEr
 
 export class Event{
 
-    private eventId: number;
+    private id: number | undefined;
     private title: string;
     private type: EventType;
     private description: string;
-    private date: Date;
-    private time: string;
+    private dateTime: Date;
     private duration: number;
     private isRecurring: boolean;
     private notificationTiming: NotificationTiming;
     private status: EventStatus;
 
     constructor(
-        eventId: number,
         title: string,
         type: EventType,
         description: string,
-        date: Date,
-        time: string,
+        dateTime: Date,
         duration: number,
         isRecurring: boolean,
         notificationTiming: NotificationTiming,
+        id?: number | undefined,
     ) {
-        this.eventId = eventId;
+        this.id = id;
         this.title = title;
         this.type = type;
         this.description = description;
-        this.date = date;
-        this.time = time;
+        this.dateTime = dateTime;
         this.duration = duration;
         this.isRecurring = isRecurring;
         this.notificationTiming = notificationTiming;
         this.status = EventStatus.PENDING;
     }
 
-    getEventId(): number { return this.eventId; }
+    getEventId(): number | undefined { return this.id; }
     getTitle(): string { return this.title; }
     getType(): EventType { return this.type; }
     getDescription(): string { return this.description; }
-    getDate(): Date { return this.date; }
-    getTime(): string { return this.time; }
+    getDateTime(): Date { return this.dateTime; }
     getDuration(): number { return this.duration; }
     getIsRecurring(): boolean { return this.isRecurring; }
     getNotificationTiming(): NotificationTiming { return this.notificationTiming; }
@@ -77,12 +73,11 @@ export class Event{
         this.description = description;
     }
 
-    reschedule(date: Date, time: string): void {
-        if (!date || !time) {
+    reschedule(dateTime: Date): void {
+        if (!dateTime) {
             throw new InvalidEventScheduleError();
         }
-        this.date = date;
-        this.time = time;
+        this.dateTime = dateTime;
     }
 
     setDuration(duration: number): void {
