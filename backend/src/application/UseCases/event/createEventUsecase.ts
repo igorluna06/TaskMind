@@ -15,7 +15,7 @@ export class CreateEventUseCase {
         this.eventRepository = eventRepository;
     }
 
-    execute(eventData: CreateEventDTO){
+    async execute(eventData: CreateEventDTO){
         if(!eventData.title || !eventData.type || !eventData.date || !eventData.time || !eventData.description || eventData.isRecurring === undefined || !eventData.notificationTiming){
             throw new MissingRequiredFieldsError();
         }
@@ -47,7 +47,7 @@ export class CreateEventUseCase {
             throw new InvalidEventScheduleError();
         }
 
-        const newEvent = this.eventRepository.create(new Event(
+        const newEvent = await this.eventRepository.create(new Event(
             eventData.title,
             eventData.type,
             eventData.description,
