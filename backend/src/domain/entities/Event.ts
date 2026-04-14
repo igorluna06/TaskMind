@@ -1,13 +1,13 @@
-import { InvalidEventDescriptionError } from "../errors/EventErrors/InvalidEventDescriptionError";
-import { InvalidEventTitleError } from "../errors/EventErrors/InvalidEventTitleError";
-import { InvalidEventTypeError } from "../errors/EventErrors/InvalidEventTypeError";
+import { InvalidEventDescriptionError } from "../errors/event/InvalidEventDescriptionError";
+import { InvalidEventTitleError } from "../errors/event/InvalidEventTitleError";
+import { InvalidEventTypeError } from "../errors/event/InvalidEventTypeError";
 import { EventStatus } from "../enums/EventEnum/EventStatus";
 import { EventType } from "../enums/EventEnum/EventType";
 import { NotificationTiming } from "../enums/EventEnum/NotificationTiming";
-import { InvalidEventScheduleError } from "../errors/EventErrors/InvalidEventScheduleError";
-import { InvalidEventDurationError } from "../errors/EventErrors/InvalidEventDurationError";
-import { InvalidEventNotificationTimingError } from "../errors/EventErrors/InvalidEventNotificationTimingError";
-import { StatusAlreadySetError }  from "../errors/EventErrors/StatusAlreadySetError";
+import { InvalidEventScheduleError } from "../errors/event/InvalidEventScheduleError";
+import { InvalidEventDurationError } from "../errors/event/InvalidEventDurationError";
+import { InvalidEventNotificationTimingError } from "../errors/event/InvalidEventNotificationTimingError";
+import { StatusAlreadySetError }  from "../errors/event/StatusAlreadySetError";
 
 export class Event{
 

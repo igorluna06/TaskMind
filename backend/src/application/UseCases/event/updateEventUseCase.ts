@@ -1,9 +1,15 @@
 import { UpdateDataDTO } from "../../dtos/event/updateEventDTO";
 import { IEventRepository } from "../../repositories/IEventRepository";
 import { Event } from "../../../domain/entities/Event";
-import { InvalidCreateEventDateError } from "./errors/InvalidCreateEventDateError";
-import { InvalidCreateEventTimeError } from "./errors/InvalidCreateEventTimeError";
+import { InvalidEventDateError } from "../../../domain/errors/event/InvalidEventDateError";
+import { InvalidEventTimeError } from "../../../domain/errors/event/InvalidEventTimeError";
 import { EventStatus } from "../../../domain/enums/EventEnum/EventStatus";
+import { isValidDate } from "../../../utils/date/validations/isValidDate";
+import { isValidTime } from "../../../utils/date/validations/isValidTime";
+import { MissingRequiredFieldsError } from "../../errors/MissingRequiredFieldsError";
+import { EventNotFoundError } from "../../../domain/errors/event/EventNotFoundError";
+import { buildDateTime } from "../../../utils/date/format/buildDateTime";
+import { InvalidEventStatusError } from "../../../domain/errors/event/InvalidEventStatusError";
 
 export class UpdateEventUseCase {
 
@@ -18,11 +24,11 @@ export class UpdateEventUseCase {
         const eventFound: Event | null = await this.eventRepository.findById(eventId);
 
         if(!eventFound){
-            throw new Error("Event not found");
+            throw new EventNotFoundError();
         }
 
         if(updatedData === undefined){
-            throw new Error("No data provided for update");
+            throw new MissingRequiredFieldsError();
         }
 
         if(updatedData.title !== undefined){
@@ -37,54 +43,22 @@ export class UpdateEventUseCase {
             eventFound.setDescription(updatedData.description);
         }
 
-        if (updatedData.date !== undefined || updatedData.time !== undefined) {
-
-        const currentDateTime = eventFound.getDateTime();
-
-        let year = currentDateTime.getFullYear();
-        let month = currentDateTime.getMonth();
-        let day = currentDateTime.getDate();
-        let hours = currentDateTime.getHours();
-        let minutes = currentDateTime.getMinutes();
-
         if (updatedData.date !== undefined) {
-            const formatDateValid = /^\d{4}-\d{2}-\d{2}$/;
-
-            const isValidDate = (data: string) => {
-                const [y, m, d] = data.split('-').map(Number);
-                const date = new Date(y, m - 1, d);
-                return (
-                    date.getFullYear() === y &&
-                    date.getMonth() === m - 1 &&
-                    date.getDate() === d
-                );
-            };
-
-            if (!formatDateValid.test(updatedData.date) || !isValidDate(updatedData.date)) {
-                throw new InvalidCreateEventDateError();
+            if (!isValidDate(updatedData.date)) {
+                throw new InvalidEventDateError();
             }
-
-            const [y, m, d] = updatedData.date.split('-').map(Number);
-            year = y;
-            month = m - 1;
-            day = d;
+            
+            eventFound.reschedule(buildDateTime(updatedData.date, eventFound.getDateTime().getTime().toString()));
         }
 
         if (updatedData.time !== undefined) {
-            const timeRegex = /^([0-1]\d|2[0-3]):([0-5]\d)$/;
-
-            if (!timeRegex.test(updatedData.time)) {
-                throw new InvalidCreateEventTimeError();
+            if (!isValidTime(updatedData.time)) {
+                throw new InvalidEventTimeError();
             }
 
-            const [h, min] = updatedData.time.split(':').map(Number);
-            hours = h;
-            minutes = min;
+            eventFound.reschedule(buildDateTime(eventFound.getDateTime().getDate().toString(), updatedData.time));
         }
 
-        const newDateTime = new Date(year, month, day, hours, minutes);
-        eventFound.reschedule(newDateTime);
-    }
 
         if(updatedData.duration !== undefined){
             eventFound.setDuration(updatedData.duration);
@@ -112,7 +86,7 @@ export class UpdateEventUseCase {
                     eventFound.MarkAsPending();
                     break;
                 default:
-                    throw new Error("Invalid status value");
+                    throw new InvalidEventStatusError();
             }
         }
         

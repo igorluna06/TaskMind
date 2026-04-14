@@ -1,4 +1,4 @@
-export class InvalidCreateEventTimeError extends Error {
+export class InvalidEventTimeError extends Error {
 
     private code: string;
     private statusCode: number;

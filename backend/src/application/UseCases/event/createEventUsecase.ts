@@ -1,11 +1,14 @@
 import { CreateEventDTO } from "../../dtos/event/createEventDTO";
 import { Event } from "../../../domain/entities/Event";
-import { MissingRequiredFieldsError } from "./errors/MissingRequiredFieldsError";
-import { InvalidEventDurationError } from "../../../domain/errors/EventErrors/InvalidEventDurationError";
-import { InvalidEventScheduleError } from "../../../domain/errors/EventErrors/InvalidEventScheduleError";
-import { InvalidCreateEventDateError } from "./errors/InvalidCreateEventDateError";
-import { InvalidCreateEventTimeError } from "./errors/InvalidCreateEventTimeError";
+import { MissingRequiredFieldsError } from "../../errors/MissingRequiredFieldsError";
+import { InvalidEventDurationError } from "../../../domain/errors/event/InvalidEventDurationError";
+import { InvalidEventScheduleError } from "../../../domain/errors/event/InvalidEventScheduleError";
+import { InvalidEventDateError } from "../../../domain/errors/event/InvalidEventDateError";
+import { InvalidEventTimeError } from "../../../domain/errors/event/InvalidEventTimeError";
 import { IEventRepository } from "../../repositories/IEventRepository";
+import { isValidDate } from "../../../utils/date/validations/isValidDate";
+import { isValidTime } from "../../../utils/date/validations/isValidTime";
+import { buildDateTime } from "../../../utils/date/format/buildDateTime";
 
 export class CreateEventUseCase {
 
@@ -24,24 +27,15 @@ export class CreateEventUseCase {
             throw new InvalidEventDurationError();
         }
 
-        const formatDateValid = /^\d{4}-\d{2}-\d{2}$/;
-        const isValidDate = (data : string) => {
-            const [year, month, day] = data.split('-').map(Number);
-            const date = new Date(year, month - 1, day);
-            return date.getFullYear() === year && date.getMonth() === month - 1 && date.getDate() === day;
+        if(!isValidDate(eventData.date)){
+            throw new InvalidEventDateError();
         }
 
-        if(!formatDateValid.test(eventData.date) || !isValidDate(eventData.date)){
-            throw new InvalidCreateEventDateError();
+        if(!isValidTime(eventData.time)){
+            throw new InvalidEventTimeError();
         }
 
-        const timeRegex = /^([0-1]\d|2[0-3]):([0-5]\d)$/;
-
-        if(eventData.time.length != 5 || eventData.time[2] != ':' || !timeRegex.test(eventData.time)){
-            throw new InvalidCreateEventTimeError();
-        }
-
-        const dateTime = new Date(`${eventData.date}T${eventData.time}`);
+        const dateTime = buildDateTime(eventData.date, eventData.time);
 
         if(dateTime < new Date()){
             throw new InvalidEventScheduleError();
