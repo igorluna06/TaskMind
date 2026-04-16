@@ -21,7 +21,7 @@ export class UpdateEventUseCase {
         this.eventRepository = eventRepository;
     }
 
-    async execute(eventId: number, updatedData: UpdateDataDTO): Promise<Event | null> {
+    async execute(eventId: number, updatedData: UpdateDataDTO): Promise<Event> {
 
         const eventFound: Event | null = await this.eventRepository.findById(eventId);
 
@@ -96,6 +96,10 @@ export class UpdateEventUseCase {
         }
         
         const updatedEvent = await this.eventRepository.update(eventFound);
+
+        if(!updatedEvent){
+            throw new EventNotFoundError();
+        }
 
         return updatedEvent;
     }
