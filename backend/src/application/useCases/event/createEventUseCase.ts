@@ -18,7 +18,7 @@ export class CreateEventUseCase {
         this.eventRepository = eventRepository;
     }
 
-    async execute(eventData: CreateEventDTO){
+    async execute(eventData: CreateEventDTO): Promise<Event> {
         if(!eventData.title || !eventData.type || !eventData.date || !eventData.time || !eventData.description || eventData.isRecurring === undefined || !eventData.notificationTiming){
             throw new MissingRequiredFieldsError();
         }

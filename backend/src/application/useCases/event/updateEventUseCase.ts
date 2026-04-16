@@ -10,6 +10,8 @@ import { MissingRequiredFieldsError } from "../../errors/MissingRequiredFieldsEr
 import { EventNotFoundError } from "../../../domain/errors/event/EventNotFoundError";
 import { buildDateTime } from "../../../utils/date/format/buildDateTime";
 import { InvalidEventStatusError } from "../../../domain/errors/event/InvalidEventStatusError";
+import { EventType } from "../../../domain/enums/EventEnum/EventType";
+import { InvalidEventTypeError } from "../../../domain/errors/event/InvalidEventTypeError";
 
 export class UpdateEventUseCase {
 
@@ -19,7 +21,7 @@ export class UpdateEventUseCase {
         this.eventRepository = eventRepository;
     }
 
-    async execute(eventId: number, updatedData: UpdateDataDTO){
+    async execute(eventId: number, updatedData: UpdateDataDTO): Promise<Event | null> {
 
         const eventFound: Event | null = await this.eventRepository.findById(eventId);
 
@@ -27,7 +29,7 @@ export class UpdateEventUseCase {
             throw new EventNotFoundError();
         }
 
-        if(updatedData === undefined){
+        if(!updatedData || Object.values(updatedData).every(value => value === undefined || value === null)){
             throw new MissingRequiredFieldsError();
         }
 
@@ -36,6 +38,9 @@ export class UpdateEventUseCase {
         }
 
         if(updatedData.type !== undefined){
+            if(!Object.values(EventType).includes(updatedData.type)){
+                throw new InvalidEventTypeError();
+            }
             eventFound.setType(updatedData.type);
         }
 
