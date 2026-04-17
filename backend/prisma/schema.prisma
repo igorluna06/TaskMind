@@ -1,0 +1,44 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Event {
+  id               Int           @id @default(autoincrement())
+  title            String
+  description      String
+  type             EventType
+  status           EventStatus   @default(PENDING)
+  dateTime             DateTime
+  duration         Int
+  isRecurring      Boolean            @default(false)           
+  notificationTiming NotificationTiming @default(TEN_MINUTES_BEFORE)
+
+  @@map("events")   
+}
+
+enum EventType {
+  WORKOUT
+  STUDY
+  URGENT
+}
+
+enum EventStatus {
+  PENDING
+  ACTIVE
+  CANCELLED
+  DONE
+  MISSED
+}
+
+enum NotificationTiming {
+  AT_TIME_OF_EVENT
+  TEN_MINUTES_BEFORE
+  THIRTY_MINUTES_BEFORE
+  ONE_HOUR_BEFORE
+  ONE_DAY_BEFORE
+  THREE_DAYS_BEFORE
+}

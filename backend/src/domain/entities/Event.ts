@@ -29,7 +29,8 @@ export class Event{
         duration: number,
         isRecurring: boolean,
         notificationTiming: NotificationTiming,
-        id?: number | undefined,
+        id?: number,
+        status?: EventStatus
     ) {
         this.id = id;
         this.title = title;
@@ -39,7 +40,7 @@ export class Event{
         this.duration = duration;
         this.isRecurring = isRecurring;
         this.notificationTiming = notificationTiming;
-        this.status = EventStatus.PENDING;
+        this.status = status ?? EventStatus.PENDING;
     }
 
     getEventId(): number | undefined { return this.id; }
