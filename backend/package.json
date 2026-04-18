@@ -17,6 +17,7 @@
     "@prisma/adapter-pg": "^7.7.0",
     "@prisma/client": "^7.7.0",
     "express": "^5.2.1",
+    "groq-sdk": "^1.1.2",
     "pg": "^8.20.0"
   },
   "devDependencies": {

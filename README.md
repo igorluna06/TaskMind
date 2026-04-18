@@ -72,7 +72,7 @@ Camada responsável pela comunicação com o mundo externo:
 
 # 📚 Bibliotecas Utilizadas
 - Inteligência Artificial
-OpenAI API
+Groq SDK (llama3)
 
 - ORM
 Prisma 
