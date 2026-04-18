@@ -13,9 +13,8 @@ model Event {
   type             EventType
   status           EventStatus   @default(PENDING)
   dateTime             DateTime
-  duration         Int
-  isRecurring      Boolean            @default(false)           
-  notificationTiming NotificationTiming @default(TEN_MINUTES_BEFORE)
+  duration         Int           
+  notificationTiming NotificationTiming[] 
 
   @@map("events")   
 }

@@ -7,7 +7,5 @@ export interface CreateEventDTO {
     description: string;
     date: string;
     time: string;
-    isRecurring: boolean;
     duration: number;
-    notificationTiming: NotificationTiming;
 }

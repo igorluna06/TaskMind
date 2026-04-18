@@ -30,7 +30,7 @@ const eventController = new EventController(
 );
 
 router.post(EventEndpoints.ROOT, (req, res, next) => eventController.createEvent(req, res, next));
-router.get(EventEndpoints.ROOT, (req, res, next) => eventController.listEvents(req, res, next));
+router.get(EventEndpoints.ROOT,(req, res, next) => eventController.listEvents(req, res, next));
 router.get(EventEndpoints.FILTER, (req, res, next) => eventController.findEventsByFilter(req, res, next));
 router.get(EventEndpoints.BY_ID, (req, res, next) => eventController.getEventById(req, res, next));
 router.put(EventEndpoints.BY_ID, (req, res, next) => eventController.updateEvent(req, res, next));

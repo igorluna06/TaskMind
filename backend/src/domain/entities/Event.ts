@@ -8,6 +8,7 @@ import { InvalidEventScheduleError } from "../errors/event/InvalidEventScheduleE
 import { InvalidEventDurationError } from "../errors/event/InvalidEventDurationError";
 import { InvalidEventNotificationTimingError } from "../errors/event/InvalidEventNotificationTimingError";
 import { StatusAlreadySetError }  from "../errors/event/StatusAlreadySetError";
+import { AllowedNotificationTimings } from "../enums/EventEnum/AllowedNotificationTimings";
 
 export class Event{
 
@@ -17,8 +18,7 @@ export class Event{
     private description: string;
     private dateTime: Date;
     private duration: number;
-    private isRecurring: boolean;
-    private notificationTiming: NotificationTiming;
+    private notificationTiming: NotificationTiming[];
     private status: EventStatus;
 
     constructor(
@@ -27,8 +27,6 @@ export class Event{
         description: string,
         dateTime: Date,
         duration: number,
-        isRecurring: boolean,
-        notificationTiming: NotificationTiming,
         id?: number,
         status?: EventStatus
     ) {
@@ -38,8 +36,7 @@ export class Event{
         this.description = description;
         this.dateTime = dateTime;
         this.duration = duration;
-        this.isRecurring = isRecurring;
-        this.notificationTiming = notificationTiming;
+        this.notificationTiming = AllowedNotificationTimings[type];
         this.status = status ?? EventStatus.PENDING;
     }
 
@@ -49,8 +46,7 @@ export class Event{
     getDescription(): string { return this.description; }
     getDateTime(): Date { return this.dateTime; }
     getDuration(): number { return this.duration; }
-    getIsRecurring(): boolean { return this.isRecurring; }
-    getNotificationTiming(): NotificationTiming { return this.notificationTiming; }
+    getNotificationTiming(): NotificationTiming[] { return this.notificationTiming; }
     getStatus(): EventStatus { return this.status; }
 
     rename(title: string): void {
@@ -88,15 +84,29 @@ export class Event{
         this.duration = duration;
     }
 
-    setIsRecurring(isRecurring: boolean): void {
-        this.isRecurring = isRecurring;
-    }
-
-    setNotificationTiming(notificationTiming: NotificationTiming): void {
-        if (!notificationTiming) {
+    setNotificationTiming(notificationTiming: NotificationTiming[]): void {
+        if (notificationTiming.length === 0) {
             throw new InvalidEventNotificationTimingError();
         }
         this.notificationTiming = notificationTiming;
+    }
+
+    addNotificationTiming(timing: NotificationTiming): void {
+        if (!timing) {
+            throw new InvalidEventNotificationTimingError();
+        }
+        if (this.notificationTiming.includes(timing)) return;
+        this.notificationTiming.push(timing);
+    }
+
+    removeNotificationTiming(timing: NotificationTiming): void {
+        if (!timing) {
+            throw new InvalidEventNotificationTimingError();
+        }
+        this.notificationTiming = this.notificationTiming.filter(t => t !== timing);
+        if (this.notificationTiming.length === 0) {
+            throw new InvalidEventNotificationTimingError();
+        }
     }
 
     MarkAsCancel(): void {

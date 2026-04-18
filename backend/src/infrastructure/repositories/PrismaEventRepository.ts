@@ -14,7 +14,6 @@ export class PrismaEventRepository implements IEventRepository {
                 description: event.getDescription(),
                 dateTime: event.getDateTime(),
                 duration: event.getDuration(),
-                isRecurring: event.getIsRecurring(),
                 notificationTiming: event.getNotificationTiming(),
                 status: event.getStatus()
             }
@@ -39,7 +38,6 @@ export class PrismaEventRepository implements IEventRepository {
                 description: event.getDescription(),
                 dateTime: event.getDateTime(),
                 duration: event.getDuration(),
-                isRecurring: event.getIsRecurring(),
                 notificationTiming: event.getNotificationTiming(),
                 status: event.getStatus()
             }

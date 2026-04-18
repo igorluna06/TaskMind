@@ -8,6 +8,8 @@ import { DeleteEventUseCase } from "../../../application/useCases/event/deleteEv
 import { CreateEventDTO } from "../../../application/dtos/event/createEventDTO";
 import { UpdateDataDTO} from "../../../application/dtos/event/updateEventDTO";
 import { EventFilterDTO } from "../../../application/dtos/event/eventFilterDTO";
+import { SuccessMessages } from "../../constants/SucessMessages";
+import { HttpStatusCode } from "../../constants/HttpStatusCode";
 
 
 
@@ -42,7 +44,7 @@ export class EventController {
         try{
             const eventData: CreateEventDTO = req.body;
             const newEvent = await this.createEventUseCase.execute(eventData);
-            res.status(201).json(newEvent);
+            res.status(HttpStatusCode.CREATED).json(newEvent);
         } catch (error) {
             next(error);
         }
@@ -53,7 +55,7 @@ export class EventController {
         try {
             const eventId: number = Number(req.params.id);
             const event = await this.getEventByIdUseCase.execute(eventId);
-            res.json(event);
+            res.status(HttpStatusCode.OK).json(event);
         } catch (error) {
             next(error);
         }
@@ -64,7 +66,7 @@ export class EventController {
             const eventId: number = Number(req.params.id);
             const updatedData: UpdateDataDTO = req.body;
             const updatedEvent = await this.updateEventUseCase.execute(eventId, updatedData);
-            res.json(updatedEvent);
+            res.status(HttpStatusCode.OK).json(updatedEvent);
         } catch (error) {
             next(error);
         }
@@ -75,7 +77,7 @@ export class EventController {
         try{
             const filter: EventFilterDTO = req.query; 
             const events = await this.findEventsByFilterUseCase.execute(filter);
-            res.json(events);
+            res.status(HttpStatusCode.OK).json(events);
         } catch (error) {
             next(error);
         }
@@ -85,7 +87,7 @@ export class EventController {
         try{
             const eventId: number = Number(req.params.id);
             await this.deleteEventUseCase.execute(eventId);
-            res.status(204).send();
+            res.status(HttpStatusCode.OK).json({ message: SuccessMessages.EVENT_DELETED });
         } catch (error) {
             next(error);
         }

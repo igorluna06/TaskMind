@@ -12,6 +12,8 @@ import { buildDateTime } from "../../../utils/date/format/buildDateTime";
 import { InvalidEventStatusError } from "../../../domain/errors/event/InvalidEventStatusError";
 import { EventType } from "../../../domain/enums/EventEnum/EventType";
 import { InvalidEventTypeError } from "../../../domain/errors/event/InvalidEventTypeError";
+import { InvalidEventIdError } from "../../../domain/errors/event/InvalidEventIdError";
+import { AllowedNotificationTimings } from "../../../domain/enums/EventEnum/AllowedNotificationTimings";
 
 export class UpdateEventUseCase {
 
@@ -22,6 +24,10 @@ export class UpdateEventUseCase {
     }
 
     async execute(eventId: number, updatedData: UpdateDataDTO): Promise<Event> {
+
+        if(!Number.isInteger(eventId) || eventId <= 0){
+            throw new InvalidEventIdError();
+        }
 
         const eventFound: Event | null = await this.eventRepository.findById(eventId);
 
@@ -42,6 +48,7 @@ export class UpdateEventUseCase {
                 throw new InvalidEventTypeError();
             }
             eventFound.setType(updatedData.type);
+            eventFound.setNotificationTiming(AllowedNotificationTimings[updatedData.type]);
         }
 
         if(updatedData.description !== undefined){
@@ -69,8 +76,14 @@ export class UpdateEventUseCase {
             eventFound.setDuration(updatedData.duration);
         }
 
-        if(updatedData.notificationTiming !== undefined){
-            eventFound.setNotificationTiming(updatedData.notificationTiming);
+        if (updatedData.addNotificationTiming) {
+            updatedData.addNotificationTiming.forEach(timing => eventFound.addNotificationTiming(timing));
+        }
+        if (updatedData.removeNotificationTiming) {
+            updatedData.removeNotificationTiming.forEach(timing => eventFound.removeNotificationTiming(timing));
+        }
+        if (updatedData.setNotificationTiming) {
+            eventFound.setNotificationTiming(updatedData.setNotificationTiming);
         }
 
         if(updatedData.status !== undefined){

@@ -8,8 +8,9 @@ export interface UpdateDataDTO {
     description?: string;
     date?: string;
     time?: string;
-    isRecurring?: boolean;
     duration?: number;
-    notificationTiming?: NotificationTiming;
+    addNotificationTiming?: NotificationTiming[];
+    removeNotificationTiming?: NotificationTiming[];
+    setNotificationTiming?: NotificationTiming[];
     status?: EventStatus;
 }

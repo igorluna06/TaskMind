@@ -19,7 +19,7 @@ export class CreateEventUseCase {
     }
 
     async execute(eventData: CreateEventDTO): Promise<Event> {
-        if(!eventData.title || !eventData.type || !eventData.date || !eventData.time || !eventData.description || eventData.isRecurring === undefined || !eventData.notificationTiming){
+        if(!eventData.title || !eventData.type || !eventData.date || !eventData.time || !eventData.description){
             throw new MissingRequiredFieldsError();
         }
 
@@ -47,8 +47,6 @@ export class CreateEventUseCase {
             eventData.description,
             dateTime,
             eventData.duration,
-            eventData.isRecurring,
-            eventData.notificationTiming
         ));
 
         return newEvent;
