@@ -3,6 +3,7 @@ import { Message } from "../ai/types/MessageType";
 import { ConversationState } from "../ai/enums/ConversationStateEnum";
 import { prisma } from "../database/prisma/prismaClient";
 import { PrismaConversationMapper } from "../database/prisma/mappers/PrismaConversationMapper";
+import { Prisma } from "@prisma/client";
 
 export class PrismaConversationRepository implements IConversationRepository {
 
@@ -25,12 +26,16 @@ export class PrismaConversationRepository implements IConversationRepository {
   }
 
   async update(id: number, messages: Message[], state?: ConversationState): Promise<void> {
+    
+    const data: Prisma.ConversationUpdateInput = { messages: messages as Prisma.JsonValue[]};
+
+    if(state) {
+      data.state = state as any;
+    }
+    
     await prisma.conversation.update({
       where: { id },
-      data: {
-        messages: messages as any,
-        ...(state && { state })
-      }
+      data
     });
   }
 

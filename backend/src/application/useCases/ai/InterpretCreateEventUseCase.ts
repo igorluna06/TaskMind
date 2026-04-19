@@ -6,7 +6,7 @@ import { ConversationState } from "../../../infrastructure/ai/enums/Conversation
 import { CreateEventDTO } from "../../dtos/event/createEventDTO";
 import { AIParseError } from "../../../infrastructure/ai/error/AIParseError";
 
-export class InterpretEventUseCase {
+export class InterpretCreateEventUseCase {
 
     private eventInterpreter: EventInterpreter;
     private createEventUseCase: CreateEventUseCase;

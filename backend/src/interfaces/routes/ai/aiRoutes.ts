@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { AIController } from "../../controllers/ai/AIController";
-import { InterpretEventUseCase } from "../../../application/useCases/ai/InterpretEventUseCase";
+import { InterpretCreateEventUseCase } from "../../../application/useCases/ai/InterpretCreateEventUseCase";
 import { EventInterpreter } from "../../../infrastructure/ai/groq/EventInterpreter";
 import { PrismaConversationRepository } from "../../../infrastructure/repositories/PrismaConversationRepository";
 import { PrismaEventRepository } from "../../../infrastructure/repositories/PrismaEventRepository";
@@ -13,9 +13,9 @@ const conversationRepository = new PrismaConversationRepository();
 const eventRepository = new PrismaEventRepository();
 const createEventUseCase = new CreateEventUseCase(eventRepository);
 const eventInterpreter = new EventInterpreter(conversationRepository);
-const interpretEventUseCase = new InterpretEventUseCase(eventInterpreter, createEventUseCase, conversationRepository);
-const aiController = new AIController(interpretEventUseCase);
+const interpretCreateEventUseCase = new InterpretCreateEventUseCase(eventInterpreter, createEventUseCase, conversationRepository);
+const aiController = new AIController(interpretCreateEventUseCase);
 
-router.post(AIEndpoints.INTERPRET, (req, res, next) => aiController.interpretEvent(req, res, next));
+router.post(AIEndpoints.INTERPRET, (req, res, next) => aiController.interpretCreateEvent(req, res, next));
 
 export default router;

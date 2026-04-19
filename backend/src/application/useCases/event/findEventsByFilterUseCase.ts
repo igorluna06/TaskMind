@@ -6,6 +6,7 @@ import { EventType } from "../../../domain/enums/EventEnum/EventType";
 import { InvalidEventTypeError } from "../../../domain/errors/event/InvalidEventTypeError";
 import { EventStatus } from "../../../domain/enums/EventEnum/EventStatus";
 import { InvalidEventStatusError } from "../../../domain/errors/event/InvalidEventStatusError";
+import { InvalidEventDateError } from "../../../domain/errors/event/InvalidEventDateError";
 
 export class FindEventsByFilterUseCase {
 
@@ -32,7 +33,19 @@ export class FindEventsByFilterUseCase {
                 throw new InvalidEventStatusError();
             }
         }
-        
+
+        if(filter.dateTimeFrom !== undefined && isNaN(new Date(filter.dateTimeFrom).getTime())){
+            throw new InvalidEventDateError();
+        }
+
+        if(filter.dateTimeTo !== undefined && isNaN(new Date(filter.dateTimeTo).getTime())){
+            throw new InvalidEventDateError();
+        }
+
+        if(filter.dateTimeFrom && filter.dateTimeTo && filter.dateTimeFrom > filter.dateTimeTo){
+            throw new InvalidEventDateError();
+        }
+
         return this.eventRepository.findByFilter(filter);
     }
 }
