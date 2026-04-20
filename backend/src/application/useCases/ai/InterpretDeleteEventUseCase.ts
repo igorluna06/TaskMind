@@ -1,35 +1,32 @@
 import { EventInterpreter } from "../../../infrastructure/ai/groq/EventInterpreter";
 import { InterpreterResponse } from "../../../infrastructure/ai/types/InterpreterResponse";
 import { IConversationRepository } from "../../repositories/IConversationRepository";
-import { UpdateEventUseCase } from "../event/updateEventUseCase";
+import { DeleteEventUseCase } from "../event/deleteEventUseCase";
 import { ConversationState } from "../../../infrastructure/ai/enums/ConversationStateEnum";
-import { UpdateDataDTO } from "../../dtos/event/updateEventDTO";
 
-export class InterpretUpdateEventUseCase {
+export class InterpretDeleteEventUseCase {
 
     private eventInterpreter: EventInterpreter;
-    private updateEventUseCase: UpdateEventUseCase; 
+    private deleteEventUseCase: DeleteEventUseCase;
     private conversationRepository: IConversationRepository;
 
     constructor(
         eventInterpreter: EventInterpreter,
-        updateEventUseCase: UpdateEventUseCase,
+        deleteEventUseCase: DeleteEventUseCase,
         conversationRepository: IConversationRepository
     ) {
         this.eventInterpreter = eventInterpreter;
-        this.updateEventUseCase = updateEventUseCase;
+        this.deleteEventUseCase = deleteEventUseCase;
         this.conversationRepository = conversationRepository;
     }
 
-    async execute(userMessage: string, eventId: number, conversationId?: number): Promise<{result: InterpreterResponse, conversationId: number}>{
+    async execute(userMessage: string, eventId: number, conversationId?: number): Promise<{result: InterpreterResponse, conversationId: number}> {
         const id = conversationId ?? await this.conversationRepository.create();
 
         const response = await this.eventInterpreter.interpret(userMessage, id);
 
         if (response.state === ConversationState.DONE) {
-            const updateData = response.data as UpdateDataDTO;
-
-            await this.updateEventUseCase.execute(eventId, updateData);
+            await this.deleteEventUseCase.execute(eventId);
             await this.eventInterpreter.reset(id);
         }
 

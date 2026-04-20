@@ -1,3 +1,8 @@
 export const AIEndpoints = {
-    INTERPRET: "/interpret",
+    CREATE: "/create",
+    FIND: "/find",
+    FIND_FILTER: "/find/filter",
+    UPDATE: "/update/:id",
+    DELETE: "/delete/:id",
 } as const;
+

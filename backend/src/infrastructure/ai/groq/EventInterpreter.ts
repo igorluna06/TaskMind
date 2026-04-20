@@ -13,42 +13,53 @@ export class EventInterpreter {
   constructor(private readonly conversationRepository: IConversationRepository) {}
 
     async interpret(userMessage: string, conversationId: number): Promise<InterpreterResponse> {
-    
-        const conversation = await this.conversationRepository.findById(conversationId);
-        const history: Message[] = conversation?.messages ?? [];
+        return this.sendMessage(conversationId, userMessage);
+    }
 
-        const updatedHistory : Message[] = [
-        ...history,
-        { role: MessageRole.USER, content: userMessage }
-        ];
-
-        const completion = await groq.chat.completions.create({
-        model: GroqModels.EVENT_INTERPRETER,
-        messages: [
-            { role: MessageRole.SYSTEM, content: EVENT_SYSTEM_PROMPT },
-            ...updatedHistory
-        ],
-        temperature: 0.3,
-        });
-
-        const content = completion.choices[0].message.content;
-
-        if(!content) {
-            throw new InvalidAIResponseError();
-        }
-
-        const finalHistory: Message[] = [...updatedHistory, { role: MessageRole.ASSISTANT, content }];
-
-        try {
-            const parsedContent: InterpreterResponse = JSON.parse(content);
-            await this.conversationRepository.update(conversationId, finalHistory, parsedContent.state as ConversationState);
-            return  parsedContent;
-        } catch (error) {
-            throw new AIParseError();
-        }
+    async interpretWithResults(searchResults: string, conversationId: number): Promise<InterpreterResponse> {
+        const content = searchResults;
+        return this.sendMessage(conversationId, content);
     }
 
     async reset(conversationId: number): Promise<void> {
         await this.conversationRepository.delete(conversationId);
+    }
+
+    private async sendMessage(conversationId: number, content: string): Promise<InterpreterResponse> {
+        const conversation = await this.conversationRepository.findById(conversationId);
+        const history: Message[] = conversation?.messages ?? [];
+
+        const updatedHistory: Message[] = [
+            ...history,
+            { role: MessageRole.USER, content}
+        ];
+
+        const completion = await groq.chat.completions.create({
+            model: GroqModels.EVENT_INTERPRETER,
+            messages: [
+            { role: MessageRole.SYSTEM, content: EVENT_SYSTEM_PROMPT },
+            ...updatedHistory
+            ],
+            temperature: 0.3,
+        });
+
+        const responseContent = completion.choices[0].message.content;
+
+        if (!responseContent) {
+            throw new InvalidAIResponseError();
+        }
+
+        const finalHistory: Message[] = [...updatedHistory, { role: MessageRole.ASSISTANT, content: responseContent }];
+
+        try {
+            console.log("Resposta bruta da IA:", responseContent);
+            const parsedContent: InterpreterResponse = JSON.parse(responseContent);
+            console.log("Parse OK:", parsedContent);
+            await this.conversationRepository.update(conversationId, finalHistory, parsedContent.state as ConversationState);
+            return parsedContent;
+        } catch (error) {
+            console.error("Erro real:", error);
+            throw new AIParseError();
+        }
     }
 }

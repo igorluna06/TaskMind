@@ -56,4 +56,5 @@ enum ConversationState {
   COLLECTING
   CONFIRMING
   DONE
+  SEARCHING
 }

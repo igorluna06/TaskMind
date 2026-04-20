@@ -59,16 +59,18 @@ export class UpdateEventUseCase {
             if (!isValidDate(updatedData.date)) {
                 throw new InvalidEventDateError();
             }
-            
-            eventFound.reschedule(buildDateTime(updatedData.date, eventFound.getDateTime().getTime().toString()));
+            const date = eventFound.getDateTime();
+            const currentTime = `${String(date.getHours()).padStart(2, "0")}:${String(date.getMinutes()).padStart(2, "0")}`;
+            eventFound.reschedule(buildDateTime(updatedData.date, currentTime));
         }
 
         if (updatedData.time !== undefined) {
             if (!isValidTime(updatedData.time)) {
                 throw new InvalidEventTimeError();
             }
-
-            eventFound.reschedule(buildDateTime(eventFound.getDateTime().getDate().toString(), updatedData.time));
+            const date = eventFound.getDateTime();
+            const currentDate = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
+            eventFound.reschedule(buildDateTime(currentDate, updatedData.time));
         }
 
 
