@@ -1,0 +1,10 @@
+export const NotificationTiming = {
+  AT_TIME_OF_EVENT: "AT_TIME_OF_EVENT",
+  TEN_MINUTES_BEFORE: "TEN_MINUTES_BEFORE",
+  THIRTY_MINUTES_BEFORE: "THIRTY_MINUTES_BEFORE",
+  ONE_HOUR_BEFORE: "ONE_HOUR_BEFORE",
+  ONE_DAY_BEFORE: "ONE_DAY_BEFORE",
+  THREE_DAYS_BEFORE: "THREE_DAYS_BEFORE",
+} as const;
+
+export type NotificationTiming = typeof NotificationTiming[keyof typeof NotificationTiming];
